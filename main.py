@@ -1,4 +1,4 @@
-import os
+import os, argparse
 from dotenv import load_dotenv
 from google import genai
 
@@ -12,8 +12,17 @@ def main():
     #Define a new Gemini Client
     client = genai.Client(api_key=api_key)
 
+    #Define a parser and use it to parse user arguments
+    #This makes it so that we can access "args.user_prompt"
+    parser = argparse.ArgumentParser(description="Chatbot")
+    parser.add_argument("user_prompt", type=str, help="User prompt")
+    args = parser.parse_args()
+
+    #Defining a conversation history
+    messages = [genai.types.Content(role="user", parts=[genai.types.Part(text=args.user_prompt)])]
+
     response = client.models.generate_content(
-        model="gemini-2.5-flash", contents="Why is Boot.dev such a great place to learn backend development? Use one paragraph maximum."
+        model="gemini-2.5-flash", contents=messages
     )
 
     if response.usage_metadata is None:
