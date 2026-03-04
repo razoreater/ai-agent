@@ -1,5 +1,4 @@
 import os
-from os.path import normpath
 
 def get_files_info(working_directory, directory="."):
     try:
@@ -30,12 +29,12 @@ def get_files_info(working_directory, directory="."):
                     size = os.path.getsize(item_path)
                     is_dir = os.path.isdir(item_path)
                     lines.append(f"- {item}: file_size={size} bytes, is_dir={is_dir}")
-                except OSError as e:
-                    lines.append(f"- {item}: Error: {str(e)}")
-        except OSError as e:
-            return f'Error: Could not list contents of "{target_dir}": {str(e)}'
+                except OSError as error:
+                    lines.append(f"- {item}: Error: {str(error)}")
+        except OSError as error:
+            return f'Error: Could not list contents of "{target_dir}": {str(error)}'
 
         return "\n".join(lines)
 
-    except Exception as e:
-        return f'Error: {str(e)}'
+    except Exception as error:
+        return f'Error: {str(error)}'
