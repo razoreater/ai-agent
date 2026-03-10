@@ -1,5 +1,4 @@
 import os
-from os.path import exists, isdir
 
 def write_file(working_directory, file_path, content):
     abs_working_dir = os.path.abspath(working_directory)
