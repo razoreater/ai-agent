@@ -2,7 +2,7 @@ import os, argparse
 from dotenv import load_dotenv
 from google import genai
 from prompts import system_prompt
-from functions.call_function import available_functions
+from functions.call_function import available_functions, call_function
 
 def main():
     load_dotenv()
@@ -35,6 +35,8 @@ def main():
 
     if response.usage_metadata is None:
         raise RuntimeError("No metadata receives, invalid API request?")
+    
+    function_responses = []
 
     if args.verbose:
         print(f"User prompt: {args.user_prompt} ")
@@ -42,13 +44,39 @@ def main():
         print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
         if response.function_calls:
             for function_call in response.function_calls:
-                print(f"Calling function: {function_call.name}({function_call.args})")
+                function_call_result = call_function(function_call, args.verbose)
+
+                if not function_call_result.parts:
+                    raise RuntimeError("No parts returned from function call")
+
+                function_response = function_call_result.parts[0].function_response
+                if function_response is None:
+                    raise RuntimeError("No function response returned")
+                if function_response.response is None:
+                    raise RuntimeError("No response field returned")
+
+                function_responses.append(function_call_result.parts[0])
+                print(f"-> {function_response.response}")
         else:
             print(response.text)
+
     else:
         if response.function_calls:
             for function_call in response.function_calls:
-                print(f"Calling function: {function_call.name}({function_call.args})")
+                function_call_result = call_function(function_call, args.verbose)
+
+                if not function_call_result.parts:
+                    raise RuntimeError("No parts returned from function call")
+
+                function_response = function_call_result.parts[0].function_response
+                if function_response is None:
+                    raise RuntimeError("No function response returned")
+                if function_response.response is None:
+                    raise RuntimeError("No response field returned")
+
+                function_responses.append(function_call_result.parts[0])
+
+
         else:
             print(response.text)
 
