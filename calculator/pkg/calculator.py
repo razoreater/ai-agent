@@ -8,6 +8,7 @@ class Calculator:
             "*": lambda a, b: a * b,
             "/": lambda a, b: a / b,
         }
+        # Lower numbers indicate higher precedence
         self.precedence = {
             "+": 1,
             "-": 1,
